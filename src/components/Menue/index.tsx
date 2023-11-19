@@ -44,9 +44,6 @@ const LeftMenu: React.FC = () => {
       onMouseEnter={() => setCollapsed(!collapsed)}
       onMouseLeave={() => setCollapsed(!collapsed)}
       defaultSelectedKeys={['2']}
-      // defaultOpenKeys={['sub1']}
-      // mode='inline'
-      // theme='dark'
       inlineCollapsed={collapsed}
       items={items}
     />

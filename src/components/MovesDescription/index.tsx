@@ -1,13 +1,43 @@
-import React from 'react';
-import { Button, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Spin, Typography } from 'antd';
 
 import FeaturedTitleImag from '../../assets/icons/FeaturedTitleImage.png';
+import { IItem, IMovesDescriptionProps } from '../../types';
+import MovesSlider from '../MovesSlider';
 
 import { MovesDescriptionContainer } from './styled';
 
 const { Text } = Typography;
 
-const MovesDescription: React.FC = () => {
+const MovesDescription: React.FC<IMovesDescriptionProps> = ({ data, isLoading }) => {
+  const [movesData, setMovesData] = useState<IItem | undefined>();
+  useEffect(() => {
+    setMovesData({ ...data?.Featured });
+  }, [data]);
+
+  const secondsToHms: (date: string) => string = (date) => {
+    const newDate = Number(date);
+    const h = Math.floor(newDate / 3600);
+    const m = Math.floor((newDate % 3600) / 60);
+    const duration = h === 0 ? `${m}m` : `${h}h ${m}m`;
+    return duration;
+  };
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 'calc(100vw - 80px)',
+          height: '100vh',
+        }}
+      >
+        <Spin />
+      </div>
+    );
+  }
   return (
     <MovesDescriptionContainer>
       <div
@@ -25,7 +55,7 @@ const MovesDescription: React.FC = () => {
             fontWeight: 800,
           }}
         >
-          MOVE
+          {movesData?.Category}
         </h3>
         <img
           src={FeaturedTitleImag}
@@ -33,11 +63,10 @@ const MovesDescription: React.FC = () => {
             width: '35vw',
           }}
         />
-        <Text style={{ color: '#F1F1F1' }}>2021 +18 1h 48m</Text>
-        <Text style={{ color: '#F1F1F1', width: '100%' }}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-          industry&apos;s standard dummy text ever since the 1500s
+        <Text style={{ color: '#F1F1F1' }}>
+          {movesData?.ReleaseYear} {movesData?.MpaRating} {secondsToHms(movesData?.Duration || '')}
         </Text>
+        <Text style={{ color: '#F1F1F1', width: '100%' }}>{movesData?.Description}</Text>
         <div
           style={{
             display: 'flex',
@@ -45,10 +74,13 @@ const MovesDescription: React.FC = () => {
             gap: '16px',
           }}
         >
-          <Button>Play</Button>
+          <Button href={movesData?.VideoUrl} target='_blank'>
+            Play
+          </Button>
           <Button type='primary'>More Info</Button>
         </div>
       </div>
+      <MovesSlider data={data} setMovesData={setMovesData} isLoading={isLoading} />
     </MovesDescriptionContainer>
   );
 };
